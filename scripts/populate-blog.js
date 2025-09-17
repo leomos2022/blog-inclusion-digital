@@ -329,8 +329,8 @@ const sampleBlogs = [
 // Function to populate database
 async function populateDatabase() {
     try {
-        // Connect to MongoDB (you'll need to update this connection string)
-        await mongoose.connect('mongodb://localhost:27017/blog-app');
+        // Connect to MongoDB
+        await mongoose.connect('mongodb://localhost:27017/blog-inclusion-digital');
         console.log('Connected to MongoDB');
         
         // Clear existing blogs
