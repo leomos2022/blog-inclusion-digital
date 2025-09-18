@@ -1,11 +1,11 @@
 'use client'
-import { assets, blog_data } from '@/Assets/assets';
+import { assets } from '@/Assets/assets';
 import Footer from '@/Components/Footer';
 import QuizComponent from '@/Components/QuizComponent';
 import axios from 'axios';
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 
 const Page = ({ params }) => {
 
@@ -13,18 +13,18 @@ const Page = ({ params }) => {
   const [userEmail, setUserEmail] = useState('');
   const [showQuiz, setShowQuiz] = useState(false);
 
-  const fetchBlogData = async () => {
+  const fetchBlogData = useCallback(async () => {
     const response = await axios.get('/api/blog', {
       params: {
         id: params.id
       }
     })
     setData(response.data);
-  }
+  }, [params.id])
 
   useEffect(() => {
     fetchBlogData();
-  }, [params.id])
+  }, [fetchBlogData])
 
   const handleEmailSubmit = (e) => {
     e.preventDefault();
