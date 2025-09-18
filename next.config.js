@@ -1,11 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  outputFileTracingRoot: __dirname,
   images: {
-    domains: ['localhost'],
+    domains: ['localhost', 'vercel.app'],
     unoptimized: true
   },
-  serverExternalPackages: ['mongoose']
+  serverExternalPackages: ['mongoose'],
+  experimental: {
+    serverComponentsExternalPackages: ['mongoose']
+  }
 }
 
 module.exports = nextConfig
