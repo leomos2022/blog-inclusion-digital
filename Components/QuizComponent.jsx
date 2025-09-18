@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'react-toastify';
 
 const QuizComponent = ({ blogId, userEmail }) => {
@@ -14,9 +14,9 @@ const QuizComponent = ({ blogId, userEmail }) => {
 
     useEffect(() => {
         fetchQuestions();
-    }, [blogId]);
+    }, [blogId, fetchQuestions]);
 
-    const fetchQuestions = async () => {
+    const fetchQuestions = useCallback(async () => {
         try {
             const response = await fetch(`/api/questions?blogId=${blogId}`);
             const data = await response.json();
@@ -27,7 +27,7 @@ const QuizComponent = ({ blogId, userEmail }) => {
             toast.error('Error al cargar las preguntas');
             setLoading(false);
         }
-    };
+    }, [blogId]);
 
     const handleAnswerSelect = (questionId, answer) => {
         setAnswers(prev => ({

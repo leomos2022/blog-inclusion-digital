@@ -7,7 +7,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
 
-const page = ({ params }) => {
+const Page = ({ params }) => {
 
   const [data, setData] = useState(null);
   const [userEmail, setUserEmail] = useState('');
@@ -24,7 +24,7 @@ const page = ({ params }) => {
 
   useEffect(() => {
     fetchBlogData();
-  }, [])
+  }, [params.id])
 
   const handleEmailSubmit = (e) => {
     e.preventDefault();
@@ -146,4 +146,4 @@ const page = ({ params }) => {
   )
 }
 
-export default page
+export default Page

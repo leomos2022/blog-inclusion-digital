@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { ConnectDB } from '@/lib/config/db';
 import UserResponse from '@/lib/models/UserResponseModel';
 import Question from '@/lib/models/QuestionModel';
+import mongoose from 'mongoose';
 
 export async function POST(request) {
     try {
@@ -51,7 +52,8 @@ export async function POST(request) {
         
         // Enviar email de confirmación
         try {
-            const blog = await mongoose.model('Blog').findById(blogId);
+            const Blog = mongoose.model('Blog');
+            const blog = await Blog.findById(blogId);
             await fetch('/api/send-email', {
                 method: 'POST',
                 headers: {
