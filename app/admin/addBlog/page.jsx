@@ -13,7 +13,7 @@ const page = () => {
         description:"",
         category:"Celulares",
         author:"Equipo de Inclusión Digital",
-        authorImg:"/author_img.png"
+        authorImg:"/profile_icon.png"
     })
 
     const onChangeHandler = (event) =>{
@@ -41,7 +41,7 @@ const page = () => {
               description:"",
               category:"Celulares",
               author:"Equipo de Inclusión Digital",
-              authorImg:"/author_img.png"
+              authorImg:"/profile_icon.png"
             });
         }
         else{

@@ -79,7 +79,7 @@ const sampleBlogs = [
         category: "Celulares",
         author: "Equipo de Inclusión Digital",
         image: "/blog_pic_1.png",
-        authorImg: "/author_img.png"
+        authorImg: "/profile_icon.png"
     },
     {
         title: "Cómo Crear y Gestionar tu Correo Electrónico",
@@ -125,7 +125,7 @@ const sampleBlogs = [
         category: "Correo",
         author: "Equipo de Inclusión Digital",
         image: "/blog_pic_2.png",
-        authorImg: "/author_img.png"
+        authorImg: "/profile_icon.png"
     },
     {
         title: "Microsoft Office: Herramientas Esenciales para el Trabajo Digital",
@@ -179,7 +179,7 @@ const sampleBlogs = [
         category: "Office",
         author: "Equipo de Inclusión Digital",
         image: "/blog_pic_3.png",
-        authorImg: "/author_img.png"
+        authorImg: "/profile_icon.png"
     },
     {
         title: "Inteligencia Artificial: Una Herramienta para Todos",
@@ -242,7 +242,7 @@ const sampleBlogs = [
         category: "IA",
         author: "Equipo de Inclusión Digital",
         image: "/blog_pic_4.png",
-        authorImg: "/author_img.png"
+        authorImg: "/profile_icon.png"
     },
     {
         title: "Seguridad Digital: Protege tu Información en Internet",
@@ -322,7 +322,7 @@ const sampleBlogs = [
         category: "Seguridad",
         author: "Equipo de Inclusión Digital",
         image: "/blog_pic_5.png",
-        authorImg: "/author_img.png"
+        authorImg: "/profile_icon.png"
     }
 ];
 
