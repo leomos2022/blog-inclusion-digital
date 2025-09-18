@@ -9,9 +9,21 @@ const BlogList = () => {
     const [blogs,setBlogs] = useState([]);
 
     const fetchBlogs = async () =>{
-      const response = await axios.get('/api/blog');
-      setBlogs(response.data.blogs);
-      console.log(response.data.blogs);
+      try {
+        const response = await axios.get('/api/blog');
+        setBlogs(response.data.blogs);
+        console.log('Blogs cargados desde API:', response.data.blogs);
+      } catch (error) {
+        console.error('Error cargando blogs desde API, usando datos estáticos:', error);
+        try {
+          const response = await axios.get('/api/blog-static');
+          setBlogs(response.data.blogs);
+          console.log('Blogs cargados desde API estática:', response.data.blogs);
+        } catch (staticError) {
+          console.error('Error cargando datos estáticos:', staticError);
+          setBlogs([]);
+        }
+      }
     }
 
     useEffect(()=>{
