@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+require('dotenv').config();
 
 // Blog Schema
 const blogSchema = new mongoose.Schema({
@@ -330,7 +331,9 @@ const sampleBlogs = [
 async function populateDatabase() {
     try {
         // Connect to MongoDB
-        await mongoose.connect('mongodb://localhost:27017/blog-inclusion-digital');
+    const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/blog-inclusion-digital';
+    console.log('Usando URI:', uri);
+    await mongoose.connect(uri);
         console.log('Connected to MongoDB');
         
         // Clear existing blogs

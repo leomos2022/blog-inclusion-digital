@@ -23,17 +23,9 @@ const QuizComponent = ({ blogId, userEmail }) => {
             setQuestions(data.questions);
             setLoading(false);
         } catch (error) {
-            console.error('Error fetching questions, trying static API:', error);
-            try {
-                const response = await fetch(`/api/questions-static?blogId=${blogId}`);
-                const data = await response.json();
-                setQuestions(data.questions);
-                setLoading(false);
-            } catch (staticError) {
-                console.error('Error fetching static questions:', staticError);
-                toast.error('Error al cargar las preguntas');
-                setLoading(false);
-            }
+            console.error('Error fetching questions:', error);
+            toast.error('Error al cargar las preguntas');
+            setLoading(false);
         }
     }, [blogId]);
 
