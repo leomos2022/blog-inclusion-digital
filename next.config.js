@@ -1,22 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  outputFileTracingRoot: __dirname,
+  output: 'standalone',
   images: {
     unoptimized: true,
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: '**',
-      },
-    ],
-     domains: ['res.cloudinary.com'],
+    domains: ['res.cloudinary.com'],
   },
-  serverExternalPackages: ['mongoose'],
-  // Optimizaciones para Vercel
+  serverExternalPackages: ['mongoose', 'cloudinary'],
   compress: true,
   poweredByHeader: false,
   generateEtags: false,
-  // Configuración de headers para mejor rendimiento
   async headers() {
     return [
       {
@@ -40,4 +32,4 @@ const nextConfig = {
   },
 }
 
-module.exports = nextConfig
+export default nextConfig

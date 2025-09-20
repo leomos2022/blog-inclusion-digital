@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import { ConnectDB } from '../lib/config/db.js';
 import BlogModel from '../lib/models/BlogModel.js';
-import QuestionModel from '../lib/models/QuestionModel.js';
+import { QuestionModel } from '../lib/models/QuestionModel.js';
 
 // Preguntas de ejemplo para diferentes blogs
 const sampleQuestions = {
