@@ -9,16 +9,11 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const LoadDB = async () => {
-  await ConnectDB();
-}
-
-LoadDB();
 
 
 // API Endpoint to get all blogs
-export async function GET(request) {
   try {
+    await ConnectDB();
     const blogId = request.nextUrl.searchParams.get("id");
     if (blogId) {
       const blog = await BlogModel.findById(blogId);
@@ -39,7 +34,7 @@ export async function GET(request) {
 
 
 // API Endpoint For Uploading Blogs
-export async function POST(request) {
+  await ConnectDB();
   const formData = await request.formData();
   const image = formData.get('image');
 
@@ -88,10 +83,10 @@ export async function POST(request) {
 
 // Creating API Endpoint to delete Blog
 
-export async function DELETE(request) {
+  await ConnectDB();
   const id = await request.nextUrl.searchParams.get('id');
   const blog = await BlogModel.findById(id);
-  fs.unlink(`./public${blog.image}`, () => { });
+  // fs.unlink solo funciona en local, no en Vercel/Render
   await BlogModel.findByIdAndDelete(id);
   return NextResponse.json({ msg: "Blog Deleted" });
 }
