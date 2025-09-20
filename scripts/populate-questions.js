@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
-const { ConnectDB } = require('../lib/config/db.js');
-const Blog = require('../lib/models/BlogModel.js');
-const Question = require('../lib/models/QuestionModel.js');
+const { ConnectDB } = require('../lib/config/db');
+const BlogModel = require('../lib/models/BlogModel');
+const QuestionModel = require('../lib/models/QuestionModel');
 
 // Preguntas de ejemplo para diferentes blogs
 const sampleQuestions = {
@@ -117,7 +117,7 @@ async function populateQuestions() {
         console.log('Connected to MongoDB');
         
         // Obtener todos los blogs
-        const blogs = await Blog.find({});
+        const blogs = await BlogModel.find({});
         console.log(`Found ${blogs.length} blogs`);
         
         // Limpiar preguntas existentes
@@ -142,7 +142,7 @@ async function populateQuestions() {
             
             // Crear preguntas para este blog
             for (const questionData of categoryQuestions) {
-                const question = new Question({
+                const question = new QuestionModel({
                     blogId: blog._id,
                     question: questionData.question,
                     options: questionData.options,

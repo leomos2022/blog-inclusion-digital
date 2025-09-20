@@ -2,7 +2,7 @@
 
 const axios = require('axios');
 
-const BASE_URL = process.env.VERCEL_URL || 'http://localhost:3000';
+const BASE_URL = process.env.RENDER_EXTERNAL_URL || process.env.VERCEL_URL || 'http://localhost:3000';
 
 async function verifyDeployment() {
   console.log('🔍 Verificando despliegue...\n');

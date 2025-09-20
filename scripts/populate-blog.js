@@ -1,39 +1,9 @@
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-// Blog Schema
-const blogSchema = new mongoose.Schema({
-    title: {
-        type: String,
-        required: true
-    },
-    description: {
-        type: String,
-        required: true
-    },
-    category: {
-        type: String,
-        required: true
-    },
-    author: {
-        type: String,
-        required: true
-    },
-    image: {
-        type: String,
-        required: true
-    },
-    authorImg: {
-        type: String,
-        required: true
-    },
-    date: {
-        type: Date,
-        default: Date.now()
-    }
-});
-
-const BlogModel = mongoose.models.blog || mongoose.model('blog', blogSchema);
+// Import the model from the correct path
+const { ConnectDB } = require('../lib/config/db');
+const BlogModel = require('../lib/models/BlogModel');
 
 // Sample blog posts about digital inclusion
 const sampleBlogs = [
