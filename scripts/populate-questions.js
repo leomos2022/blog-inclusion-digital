@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import { ConnectDB } from '../lib/config/db.js';
 import BlogModel from '../lib/models/BlogModel.js';
-import { QuestionModel } from '../lib/models/QuestionModel.js';
+import Question from '../lib/models/QuestionModel.js';
 
 // Preguntas de ejemplo para diferentes blogs
 const sampleQuestions = {
@@ -142,7 +142,7 @@ async function populateQuestions() {
             
             // Crear preguntas para este blog
             for (const questionData of categoryQuestions) {
-                const question = new QuestionModel({
+                const question = new Question({
                     blogId: blog._id,
                     question: questionData.question,
                     options: questionData.options,
