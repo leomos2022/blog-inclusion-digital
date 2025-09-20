@@ -9,6 +9,7 @@ const nextConfig = {
         hostname: '**',
       },
     ],
+     domains: ['res.cloudinary.com'],
   },
   serverExternalPackages: ['mongoose'],
   // Optimizaciones para Vercel
