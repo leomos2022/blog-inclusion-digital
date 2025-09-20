@@ -1,9 +1,9 @@
-const mongoose = require('mongoose');
-require('dotenv').config();
+import mongoose from 'mongoose';
+import 'dotenv/config';
 
 // Import the model from the correct path
-const { ConnectDB } = require('../lib/config/db');
-const BlogModel = require('../lib/models/BlogModel');
+import { ConnectDB } from '../lib/config/db.js';
+import BlogModel from '../lib/models/BlogModel.js';
 
 // Sample blog posts about digital inclusion
 const sampleBlogs = [

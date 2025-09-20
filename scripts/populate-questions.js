@@ -1,7 +1,7 @@
-const mongoose = require('mongoose');
-const { ConnectDB } = require('../lib/config/db');
-const BlogModel = require('../lib/models/BlogModel');
-const QuestionModel = require('../lib/models/QuestionModel');
+import mongoose from 'mongoose';
+import { ConnectDB } from '../lib/config/db.js';
+import BlogModel from '../lib/models/BlogModel.js';
+import QuestionModel from '../lib/models/QuestionModel.js';
 
 // Preguntas de ejemplo para diferentes blogs
 const sampleQuestions = {
