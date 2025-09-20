@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const axios = require('axios');
+import axios from 'axios';
 
 const BASE_URL = process.env.RENDER_EXTERNAL_URL || process.env.VERCEL_URL || 'http://localhost:3000';
 
