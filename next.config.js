@@ -3,9 +3,9 @@ const nextConfig = {
   output: 'standalone',
   images: {
     unoptimized: true,
-    domains: ['res.cloudinary.com'],
+    domains: ['cdn.sanity.io'],
   },
-  serverExternalPackages: ['mongoose', 'cloudinary'],
+  serverExternalPackages: ['@sanity/client'],
   compress: true,
   poweredByHeader: false,
   generateEtags: false,
