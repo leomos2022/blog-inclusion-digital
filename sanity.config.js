@@ -1,17 +1,17 @@
-import { defineConfig } from 'sanity'
-import { deskTool } from 'sanity/desk'
-import { visionTool } from '@sanity/vision'
-import { schemaTypes } from './sanity/schemas'
+import {defineConfig} from 'sanity'
+import {structureTool} from 'sanity/structure'
+import {visionTool} from '@sanity/vision'
+import {schemaTypes} from './sanity/schemas'
 
 export default defineConfig({
-  name: 'blog-inclusion-digital',
+  name: 'default',
   title: 'Blog Inclusión Digital',
   
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'temp-project-id',
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
+  projectId: '37zqpgoi',
+  dataset: 'production',
   
   plugins: [
-    deskTool({
+    structureTool({
       structure: (S) =>
         S.list()
           .title('Contenido')
