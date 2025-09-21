@@ -2,9 +2,7 @@
  * This configuration file lets you run `$ sanity [command]` in this folder
  * Go to https://www.sanity.io/docs/cli to learn more.
  **/
-import {defineCliConfig} from 'sanity/cli'
-
-export default defineCliConfig({
+export default {
   api: {
     projectId: '37zqpgoi',
     dataset: 'production',
@@ -19,4 +17,4 @@ export default defineCliConfig({
    * Set the hostname for the studio when deploying
    */
   studioHost: 'blog-inclusion-digital'
-})
+}
