@@ -1,5 +1,9 @@
-import { ConnectDB } from "@/lib/config/db"
-import BlogModel from "@/lib/models/BlogModel";
+// MongoDB imports (commented for now)
+// import { ConnectDB } from "@/lib/config/db"
+// import BlogModel from "@/lib/models/BlogModel";
+
+// Sanity imports
+import { client, transformSanityBlog } from "@/lib/config/sanity";
 const { NextResponse } = require("next/server")
 import { v2 as cloudinary } from 'cloudinary';
 
@@ -9,29 +13,85 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-
-
-// API Endpoint to get all blogs
+// API Endpoint to get all blogs from Sanity
 export async function GET(request) {
   try {
-    await ConnectDB();
     const blogId = request.nextUrl.searchParams.get("id");
+    
     if (blogId) {
-      const blog = await BlogModel.findById(blogId);
-      return NextResponse.json(blog);
-    }
-    else {
-      const blogs = await BlogModel.find({});
-      return NextResponse.json({ blogs })
+      // Get single blog by ID from Sanity
+      const sanityBlog = await client.fetch(
+        `*[_type == "blog" && _id == $id][0]{
+          _id,
+          title,
+          slug,
+          description,
+          category,
+          author,
+          image,
+          authorImg,
+          publishedAt,
+          _createdAt
+        }`,
+        { id: blogId }
+      );
+      
+      if (!sanityBlog) {
+        return NextResponse.json({ error: 'Blog not found' }, { status: 404 });
+      }
+      
+      const transformedBlog = transformSanityBlog(sanityBlog);
+      return NextResponse.json(transformedBlog);
+    } else {
+      // Get all blogs from Sanity
+      const sanityBlogs = await client.fetch(
+        `*[_type == "blog"] | order(publishedAt desc, _createdAt desc){
+          _id,
+          title,
+          slug,
+          description,
+          category,
+          author,
+          image,
+          authorImg,
+          publishedAt,
+          _createdAt
+        }`
+      );
+      
+      const transformedBlogs = sanityBlogs.map(transformSanityBlog);
+      return NextResponse.json({ blogs: transformedBlogs });
     }
   } catch (error) {
-    console.error('Error in blog API:', error);
+    console.error('Error in Sanity blog API:', error);
     return NextResponse.json({ 
-      error: 'Error fetching blogs',
+      error: 'Error fetching blogs from Sanity',
       blogs: [] 
     }, { status: 500 });
   }
 }
+
+// MongoDB version (commented for now)
+// export async function GET(request) {
+//   try {
+//     await ConnectDB();
+//     const blogId = request.nextUrl.searchParams.get("id");
+//     if (blogId) {
+//       const blog = await BlogModel.findById(blogId);
+//       return NextResponse.json(blog);
+//     }
+//     else {
+//       const blogs = await BlogModel.find({});
+//       return NextResponse.json({ blogs })
+//     }
+//   } catch (error) {
+//     console.error('Error in blog API:', error);
+//     return NextResponse.json({ 
+//       error: 'Error fetching blogs',
+//       blogs: [] 
+//     }, { status: 500 });
+//   }
+// }
 
 
 // API Endpoint For Uploading Blogs

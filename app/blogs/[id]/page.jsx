@@ -19,9 +19,19 @@ const Page = ({ params }) => {
 
   const fetchBlogData = useCallback(async () => {
     try {
-      const response = await axios.get('/api/blog', {
-        params: { id }
-      });
+      // Try to fetch by slug first, then by id
+      let response;
+      try {
+        response = await axios.get('/api/blog', {
+          params: { id }
+        });
+      } catch (error) {
+        // If fetching by id fails, try by slug
+        console.log('Trying to fetch by slug...');
+        response = await axios.get('/api/blog', {
+          params: { slug: id }
+        });
+      }
       setData(response.data);
     } catch (error) {
       console.error('Error al obtener el blog:', error);
