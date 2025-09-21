@@ -1,48 +1,111 @@
-import { blog_data } from '@/Assets/assets'
 import React, { useEffect, useState } from 'react'
 import BlogItem from './BlogItem'
-import axios from 'axios';
+import { getAllBlogs, getBlogsByCategory } from '@/lib/config/sanity'
 
 const BlogList = () => {
+    const [menu, setMenu] = useState("All");
+    const [blogs, setBlogs] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    const [menu,setMenu] = useState("All");
-    const [blogs,setBlogs] = useState([]);
-
-    const fetchBlogs = async () =>{
-      const response = await axios.get('/api/blog');
-      setBlogs(response.data.blogs);
-      console.log(response.data.blogs);
+    const fetchBlogs = async (category = null) => {
+        try {
+            setLoading(true);
+            let fetchedBlogs;
+            
+            if (category && category !== "All") {
+                fetchedBlogs = await getBlogsByCategory(category);
+            } else {
+                fetchedBlogs = await getAllBlogs();
+            }
+            
+            setBlogs(fetchedBlogs);
+            console.log('Blogs fetched from Sanity:', fetchedBlogs);
+        } catch (error) {
+            console.error('Error fetching blogs:', error);
+            setBlogs([]);
+        } finally {
+            setLoading(false);
+        }
     }
 
-    useEffect(()=>{
-      fetchBlogs();
-    },[])
+    useEffect(() => {
+        fetchBlogs(menu === "All" ? null : menu);
+    }, [menu])
 
-  return (
-    <div>
-      <div className='flex justify-center gap-6 my-10'>
-        <button onClick={()=>setMenu('All')} className={menu==="All"?'bg-black text-white py-1 px-4 rounded-sm':""}>Todos</button>
-        <button onClick={()=>setMenu('Celulares')} className={menu==="Celulares"?'bg-black text-white py-1 px-4 rounded-sm':""}>Celulares</button>
-        <button onClick={()=>setMenu('Correo')} className={menu==="Correo"?'bg-black text-white py-1 px-4 rounded-sm':""}>Correo</button>
-        <button onClick={()=>setMenu('Office')} className={menu==="Office"?'bg-black text-white py-1 px-4 rounded-sm':""}>Microsoft Office</button>
-        <button onClick={()=>setMenu('IA')} className={menu==="IA"?'bg-black text-white py-1 px-4 rounded-sm':""}>Inteligencia Artificial</button>
-        <button onClick={()=>setMenu('Seguridad')} className={menu==="Seguridad"?'bg-black text-white py-1 px-4 rounded-sm':""}>Seguridad Digital</button>
-      </div>
-      <div className='flex flex-wrap justify-around gap-1 gap-y-10 mb-16 xl:mx-24'>
-        {blogs.filter((item)=> menu==="All"?true:item.category===menu).map((item,index)=>{
-            return <BlogItem 
-              key={index} 
-              id={item._id} 
-              slug={item.slug}
-              image={item.image} 
-              title={item.title} 
-              description={item.description} 
-              category={item.category} 
-            />
-        })}
-      </div>
-    </div>
-  )
+    const handleMenuChange = (category) => {
+        setMenu(category);
+    }
+
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center py-20">
+                <div className="text-lg">Cargando blogs...</div>
+            </div>
+        );
+    }
+
+    return (
+        <div>
+            <div className='flex justify-center gap-6 my-10 flex-wrap'>
+                <button 
+                    onClick={() => handleMenuChange('All')} 
+                    className={menu === "All" ? 'bg-black text-white py-1 px-4 rounded-sm' : "hover:bg-gray-100 py-1 px-4 rounded-sm transition-colors"}
+                >
+                    Todos
+                </button>
+                <button 
+                    onClick={() => handleMenuChange('Celulares')} 
+                    className={menu === "Celulares" ? 'bg-black text-white py-1 px-4 rounded-sm' : "hover:bg-gray-100 py-1 px-4 rounded-sm transition-colors"}
+                >
+                    Celulares
+                </button>
+                <button 
+                    onClick={() => handleMenuChange('Correo')} 
+                    className={menu === "Correo" ? 'bg-black text-white py-1 px-4 rounded-sm' : "hover:bg-gray-100 py-1 px-4 rounded-sm transition-colors"}
+                >
+                    Correo
+                </button>
+                <button 
+                    onClick={() => handleMenuChange('Office')} 
+                    className={menu === "Office" ? 'bg-black text-white py-1 px-4 rounded-sm' : "hover:bg-gray-100 py-1 px-4 rounded-sm transition-colors"}
+                >
+                    Microsoft Office
+                </button>
+                <button 
+                    onClick={() => handleMenuChange('IA')} 
+                    className={menu === "IA" ? 'bg-black text-white py-1 px-4 rounded-sm' : "hover:bg-gray-100 py-1 px-4 rounded-sm transition-colors"}
+                >
+                    Inteligencia Artificial
+                </button>
+                <button 
+                    onClick={() => handleMenuChange('Seguridad')} 
+                    className={menu === "Seguridad" ? 'bg-black text-white py-1 px-4 rounded-sm' : "hover:bg-gray-100 py-1 px-4 rounded-sm transition-colors"}
+                >
+                    Seguridad Digital
+                </button>
+            </div>
+            
+            {blogs.length === 0 ? (
+                <div className="text-center py-20">
+                    <p className="text-gray-600">No hay blogs disponibles en esta categoría.</p>
+                </div>
+            ) : (
+                <div className='flex flex-wrap justify-around gap-1 gap-y-10 mb-16 xl:mx-24'>
+                    {blogs.map((item, index) => {
+                        return <BlogItem 
+                            key={item._id || index} 
+                            id={item._id} 
+                            slug={item.slug}
+                            image={item.image} 
+                            title={item.title} 
+                            description={item.description} 
+                            category={item.category} 
+                        />
+                    })}
+                </div>
+            )}
+        </div>
+    )
 }
 
 export default BlogList

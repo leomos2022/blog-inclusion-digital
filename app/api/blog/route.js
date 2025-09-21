@@ -17,11 +17,14 @@ cloudinary.config({
 export async function GET(request) {
   try {
     const blogId = request.nextUrl.searchParams.get("id");
+    const slug = request.nextUrl.searchParams.get("slug");
     
-    if (blogId) {
-      // Get single blog by ID from Sanity
-      const sanityBlog = await client.fetch(
-        `*[_type == "blog" && _id == $id][0]{
+    if (blogId || slug) {
+      // Get single blog by ID or slug from Sanity
+      let query, params;
+      
+      if (slug) {
+        query = `*[_type == "blog" && slug.current == $slug][0]{
           _id,
           title,
           slug,
@@ -32,9 +35,25 @@ export async function GET(request) {
           authorImg,
           publishedAt,
           _createdAt
-        }`,
-        { id: blogId }
-      );
+        }`;
+        params = { slug };
+      } else {
+        query = `*[_type == "blog" && _id == $id][0]{
+          _id,
+          title,
+          slug,
+          description,
+          category,
+          author,
+          image,
+          authorImg,
+          publishedAt,
+          _createdAt
+        }`;
+        params = { id: blogId };
+      }
+      
+      const sanityBlog = await client.fetch(query, params);
       
       if (!sanityBlog) {
         return NextResponse.json({ error: 'Blog not found' }, { status: 404 });

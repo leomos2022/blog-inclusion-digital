@@ -1,35 +1,61 @@
 import { assets } from '@/Assets/assets'
 import Image from 'next/image'
 import Link from 'next/link'
-import React from 'react'
+import React, { useState } from 'react'
 
-const BlogItem = ({title,description,category,image,id,slug}) => {
+const BlogItem = ({title, description, category, image, id, slug}) => {
+  const [imageError, setImageError] = useState(false);
+  
   // Use slug if available, otherwise fallback to id
   const linkHref = slug ? `/blogs/${slug}` : `/blogs/${id}`;
   
   // Ensure image has a fallback
-  const imageUrl = image || '/blog_pic_1.png';
+  const imageUrl = imageError ? '/blog_pic_1.png' : (image || '/blog_pic_1.png');
+
+  // Clean description for preview (remove HTML tags)
+  const cleanDescription = description ? description.replace(/<[^>]*>/g, '').slice(0, 120) : '';
+
+  const handleImageError = () => {
+    setImageError(true);
+  };
 
   return (
     <div className='max-w-[330px] sm:max-w-[300px] bg-white border border-black transition-all hover:shadow-[-7px_7px_0px_#000000]'>
-        <Link href={linkHref}>
-        <Image 
-          src={imageUrl} 
-          alt={title || 'Blog post'} 
-          width={400} 
-          height={240} 
-          className='border-b border-black'
-          onError={(e) => {
-            e.target.src = '/blog_pic_1.png';
-          }}
-        />
+      <Link href={linkHref}>
+        <div className="relative w-full h-[240px] border-b border-black overflow-hidden">
+          <Image 
+            src={imageUrl} 
+            alt={title || 'Blog post'} 
+            fill
+            className='object-cover transition-transform hover:scale-105'
+            onError={handleImageError}
+            sizes="(max-width: 768px) 330px, 300px"
+          />
+        </div>
       </Link>
-      <p className='ml-5 mt-5 px-1 inline-block bg-black text-white text-sm'>{category}</p>
+      
       <div className="p-5">
-        <h5 className='mb-2 text-lg font-medium tracking-tight text-gray-900'>{title}</h5>
-        <p className='mb-3 text-sm tracking-tight text-gray-700' dangerouslySetInnerHTML={{"__html":(description || '').slice(0,120)}}></p>
-        <Link href={linkHref} className='inline-flex items-center py-2 font-semibold text-center'>
-            Leer más <Image src={assets.arrow} className='ml-2' alt='Arrow' width={12} height={12} />
+        <p className='mb-3 px-2 py-1 inline-block bg-black text-white text-xs font-medium rounded'>
+          {category || 'General'}
+        </p>
+        <h5 className='mb-2 text-lg font-medium tracking-tight text-gray-900 line-clamp-2'>
+          {title || 'Sin título'}
+        </h5>
+        <p className='mb-3 text-sm tracking-tight text-gray-700 line-clamp-3'>
+          {cleanDescription || 'Sin descripción disponible'}
+        </p>
+        <Link 
+          href={linkHref} 
+          className='inline-flex items-center py-2 font-semibold text-center text-black hover:text-gray-700 transition-colors'
+        >
+          Leer más 
+          <Image 
+            src={assets.arrow} 
+            className='ml-2' 
+            alt='Arrow' 
+            width={12} 
+            height={12} 
+          />
         </Link>
       </div>
     </div>

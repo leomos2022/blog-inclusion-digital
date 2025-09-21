@@ -19,22 +19,40 @@ const Page = ({ params }) => {
 
   const fetchBlogData = useCallback(async () => {
     try {
-      // Try to fetch by slug first, then by id
       let response;
-      try {
-        response = await axios.get('/api/blog', {
-          params: { id }
-        });
-      } catch (error) {
-        // If fetching by id fails, try by slug
-        console.log('Trying to fetch by slug...');
-        response = await axios.get('/api/blog', {
-          params: { slug: id }
-        });
+      
+      // First try to fetch by slug (if id looks like a slug)
+      if (id && !id.match(/^[0-9a-fA-F]{24}$/)) {
+        try {
+          response = await axios.get('/api/blog', {
+            params: { slug: id }
+          });
+        } catch (error) {
+          console.log('Slug not found, trying by ID...');
+          // If slug fails, try by ID
+          response = await axios.get('/api/blog', {
+            params: { id }
+          });
+        }
+      } else {
+        // If it looks like an ID, try ID first
+        try {
+          response = await axios.get('/api/blog', {
+            params: { id }
+          });
+        } catch (error) {
+          console.log('ID not found, trying by slug...');
+          // If ID fails, try by slug
+          response = await axios.get('/api/blog', {
+            params: { slug: id }
+          });
+        }
       }
+      
       setData(response.data);
     } catch (error) {
       console.error('Error al obtener el blog:', error);
+      setData(null);
     }
   }, [id]);
 
