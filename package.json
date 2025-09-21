@@ -12,7 +12,9 @@
     "populate-questions": "node scripts/populate-questions.js",
     "verify": "node scripts/verify-deployment.js",
     "sanity:deploy": "sanity deploy",
-    "sanity:start": "sanity start"
+    "sanity:start": "sanity start",
+    "sanity:build": "sanity build",
+    "sanity:manage": "sanity manage"
   },
   "dependencies": {
     "@portabletext/react": "^4.0.3",
