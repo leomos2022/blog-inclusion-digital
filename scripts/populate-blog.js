@@ -1,4 +1,4 @@
-import { client } from '../lib/config/sanity.js';
+import { client } from '../lib/sanity.js';
 import 'dotenv/config';
 
 // Sample blog posts about digital inclusion

@@ -10,7 +10,9 @@
     "lint": "next lint",
     "populate": "node scripts/populate-blog.js",
     "populate-questions": "node scripts/populate-questions.js",
-    "verify": "node scripts/verify-deployment.js"
+    "verify": "node scripts/verify-deployment.js",
+    "sanity:deploy": "sanity deploy",
+    "sanity:start": "sanity start"
   },
   "dependencies": {
     "@portabletext/react": "^4.0.3",
