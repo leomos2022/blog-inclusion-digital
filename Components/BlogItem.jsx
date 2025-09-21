@@ -9,13 +9,21 @@ const BlogItem = ({title, description, category, image, id, slug}) => {
   // Use slug if available, otherwise fallback to id
   const linkHref = slug ? `/blogs/${slug}` : `/blogs/${id}`;
   
-  // Ensure image has a fallback
-  const imageUrl = imageError ? '/blog_pic_1.png' : (image || '/blog_pic_1.png');
+  // Ensure image has a fallback - prioritize local images
+  const getImageUrl = () => {
+    if (imageError) return '/blog_pic_1.png';
+    if (image && image.startsWith('/')) return image; // Local image
+    if (image && image.startsWith('http')) return image; // External image
+    return '/blog_pic_1.png'; // Default fallback
+  };
+  
+  const imageUrl = getImageUrl();
 
   // Clean description for preview (remove HTML tags)
   const cleanDescription = description ? description.replace(/<[^>]*>/g, '').slice(0, 120) : '';
 
   const handleImageError = () => {
+    console.log('Image failed to load:', imageUrl);
     setImageError(true);
   };
 
@@ -30,6 +38,8 @@ const BlogItem = ({title, description, category, image, id, slug}) => {
             className='object-cover transition-transform hover:scale-105'
             onError={handleImageError}
             sizes="(max-width: 768px) 330px, 300px"
+            priority={false}
+            unoptimized={true}
           />
         </div>
       </Link>

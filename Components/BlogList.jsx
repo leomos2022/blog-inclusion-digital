@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import BlogItem from './BlogItem'
-import { getAllBlogs, getBlogsByCategory } from '@/lib/config/sanity'
+import axios from 'axios'
 
 const BlogList = () => {
     const [menu, setMenu] = useState("All");
@@ -10,16 +10,17 @@ const BlogList = () => {
     const fetchBlogs = async (category = null) => {
         try {
             setLoading(true);
-            let fetchedBlogs;
             
-            if (category && category !== "All") {
-                fetchedBlogs = await getBlogsByCategory(category);
-            } else {
-                fetchedBlogs = await getAllBlogs();
-            }
+            // Use local API instead of Sanity
+            const url = category && category !== "All" 
+                ? `/api/blog?category=${category}` 
+                : '/api/blog';
+            
+            const response = await axios.get(url);
+            const fetchedBlogs = response.data.success ? response.data.blogs : [];
             
             setBlogs(fetchedBlogs);
-            console.log('Blogs fetched from Sanity:', fetchedBlogs);
+            console.log('Blogs fetched from API:', fetchedBlogs);
         } catch (error) {
             console.error('Error fetching blogs:', error);
             setBlogs([]);
