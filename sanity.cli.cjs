@@ -1,9 +1,3 @@
-export default {
-  api: {
-    projectId: '37zqpgoi',
-    dataset: 'production',
-  }
-}
 const { defineCliConfig } = require('sanity/cli');
 
 module.exports = defineCliConfig({
