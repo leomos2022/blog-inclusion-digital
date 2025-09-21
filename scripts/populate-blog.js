@@ -1,9 +1,5 @@
-import mongoose from 'mongoose';
+import { client } from '../lib/config/sanity.js';
 import 'dotenv/config';
-
-// Import the model from the correct path
-import { ConnectDB } from '../lib/config/db.js';
-import BlogModel from '../lib/models/BlogModel.js';
 
 // Sample blog posts about digital inclusion
 const sampleBlogs = [
@@ -297,29 +293,47 @@ const sampleBlogs = [
     }
 ];
 
-// Function to populate database
+// Function to populate Sanity database
 async function populateDatabase() {
     try {
-        // Connect to MongoDB
-    const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/blog-inclusion-digital';
-    console.log('Usando URI:', uri);
-    await mongoose.connect(uri);
-        console.log('Connected to MongoDB');
+        console.log('Connecting to Sanity...');
         
-        // Clear existing blogs
-        await BlogModel.deleteMany({});
-        console.log('Cleared existing blogs');
+        // Transform blogs for Sanity
+        const sanityBlogs = sampleBlogs.map((blog, index) => ({
+            _type: 'blog',
+            title: blog.title,
+            slug: {
+                _type: 'slug',
+                current: blog.title.toLowerCase()
+                    .replace(/[^a-z0-9]+/g, '-')
+                    .replace(/(^-|-$)/g, '')
+            },
+            description: blog.description,
+            category: blog.category,
+            author: blog.author,
+            publishedAt: new Date().toISOString(),
+            // Note: Images will need to be uploaded separately to Sanity
+            // For now, we'll use placeholder references
+        }));
         
-        // Insert sample blogs
-        await BlogModel.insertMany(sampleBlogs);
-        console.log('Sample blogs inserted successfully');
+        console.log('Creating blogs in Sanity...');
         
-        console.log('Database populated successfully!');
+        // Create blogs one by one
+        for (const blog of sanityBlogs) {
+            try {
+                const result = await client.create(blog);
+                console.log(`Created blog: ${result.title}`);
+            } catch (error) {
+                console.error(`Error creating blog "${blog.title}":`, error);
+            }
+        }
+        
+        console.log('Sanity database populated successfully!');
+        console.log('\n📝 Nota: Las imágenes deben subirse manualmente al Sanity Studio');
+        console.log('   Visita tu Sanity Studio para agregar imágenes a los blogs');
+        
     } catch (error) {
-        console.error('Error populating database:', error);
-    } finally {
-        await mongoose.disconnect();
-        console.log('Disconnected from MongoDB');
+        console.error('Error populating Sanity database:', error);
     }
 }
 
