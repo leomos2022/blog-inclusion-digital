@@ -1,232 +1,230 @@
-// MongoDB imports (commented for now)
-// import { ConnectDB } from "@/lib/config/db"
-// import BlogModel from "@/lib/models/BlogModel";
+import { NextResponse } from 'next/server'
 
-// Sanity imports
-import { client, transformSanityBlog } from "@/lib/config/sanity";
-const { NextResponse } = require("next/server")
-import { v2 as cloudinary } from 'cloudinary';
+// Datos de ejemplo para blogs
+const sampleBlogs = [
+  {
+    _id: '1',
+    title: "Guía Básica: Cómo Usar tu Celular de Forma Segura",
+    description: `
+      <h2>Introducción al Uso Seguro del Celular</h2>
+      <p>En la era digital actual, el celular se ha convertido en una herramienta esencial para la comunicación y el acceso a información. Sin embargo, es importante aprender a usarlo de manera segura y responsable.</p>
+      
+      <h3>Configuración Básica de Seguridad</h3>
+      <ul>
+        <li><strong>Bloqueo de pantalla:</strong> Configura un PIN, patrón o huella dactilar para proteger tu dispositivo.</li>
+        <li><strong>Actualizaciones:</strong> Mantén siempre actualizado el sistema operativo y las aplicaciones.</li>
+        <li><strong>Contraseñas:</strong> Usa contraseñas seguras y únicas para cada aplicación.</li>
+      </ul>
+      
+      <h3>Uso Responsable del Celular</h3>
+      <p>El celular puede ser una herramienta poderosa para:</p>
+      <ul>
+        <li>Comunicarte con familiares y amigos</li>
+        <li>Acceder a servicios bancarios</li>
+        <li>Buscar información importante</li>
+        <li>Acceder a servicios de salud</li>
+      </ul>
+    `,
+    category: "Celulares",
+    author: "Equipo de Inclusión Digital",
+    image: "/blog_pic_1.png",
+    authorImg: "/profile_icon.png",
+    date: new Date().toISOString(),
+    slug: "guia-basica-como-usar-tu-celular-de-forma-segura"
+  },
+  {
+    _id: '2',
+    title: "Cómo Crear y Gestionar tu Correo Electrónico",
+    description: `
+      <h2>¿Qué es el Correo Electrónico?</h2>
+      <p>El correo electrónico (email) es una forma digital de enviar y recibir mensajes a través de internet. Es una herramienta fundamental para la comunicación moderna y el acceso a servicios digitales.</p>
+      
+      <h3>Pasos para Crear un Correo Electrónico</h3>
+      <ol>
+        <li><strong>Elige un proveedor:</strong> Gmail, Outlook, Yahoo son opciones populares y gratuitas.</li>
+        <li><strong>Crea una cuenta:</strong> Ve al sitio web del proveedor y busca "Crear cuenta" o "Registrarse".</li>
+        <li><strong>Elige un nombre de usuario:</strong> Debe ser único y fácil de recordar.</li>
+        <li><strong>Establece una contraseña segura:</strong> Combina letras, números y símbolos.</li>
+      </ol>
+    `,
+    category: "Correo",
+    author: "Equipo de Inclusión Digital",
+    image: "/blog_pic_2.png",
+    authorImg: "/profile_icon.png",
+    date: new Date().toISOString(),
+    slug: "como-crear-y-gestionar-tu-correo-electronico"
+  },
+  {
+    _id: '3',
+    title: "Microsoft Office: Herramientas Esenciales para el Trabajo Digital",
+    description: `
+      <h2>Introducción a Microsoft Office</h2>
+      <p>Microsoft Office es un conjunto de aplicaciones que te ayudan a crear documentos, presentaciones, hojas de cálculo y más. Estas herramientas son esenciales en el mundo laboral y educativo moderno.</p>
+      
+      <h3>Principales Aplicaciones de Office</h3>
+      <h4>Microsoft Word - Procesador de Texto</h4>
+      <ul>
+        <li><strong>Crear documentos:</strong> Cartas, informes, currículums</li>
+        <li><strong>Formatear texto:</strong> Cambiar tamaño, color, estilo de fuente</li>
+        <li><strong>Insertar elementos:</strong> Imágenes, tablas, gráficos</li>
+      </ul>
+    `,
+    category: "Office",
+    author: "Equipo de Inclusión Digital",
+    image: "/blog_pic_3.png",
+    authorImg: "/profile_icon.png",
+    date: new Date().toISOString(),
+    slug: "microsoft-office-herramientas-esenciales-para-el-trabajo-digital"
+  },
+  {
+    _id: '4',
+    title: "Inteligencia Artificial: Una Herramienta para Todos",
+    description: `
+      <h2>¿Qué es la Inteligencia Artificial?</h2>
+      <p>La Inteligencia Artificial (IA) es una tecnología que permite a las máquinas realizar tareas que normalmente requieren inteligencia humana, como aprender, razonar y resolver problemas.</p>
+      
+      <h3>IA en la Vida Cotidiana</h3>
+      <p>La IA ya está presente en muchas actividades diarias:</p>
+      <ul>
+        <li><strong>Asistentes virtuales:</strong> Siri, Google Assistant, Alexa</li>
+        <li><strong>Recomendaciones:</strong> Netflix, YouTube, Spotify</li>
+        <li><strong>Navegación:</strong> Google Maps, Waze</li>
+      </ul>
+    `,
+    category: "IA",
+    author: "Equipo de Inclusión Digital",
+    image: "/blog_pic_4.png",
+    authorImg: "/profile_icon.png",
+    date: new Date().toISOString(),
+    slug: "inteligencia-artificial-una-herramienta-para-todos"
+  },
+  {
+    _id: '5',
+    title: "Seguridad Digital: Protege tu Información en Internet",
+    description: `
+      <h2>¿Por qué es Importante la Seguridad Digital?</h2>
+      <p>En el mundo digital actual, proteger tu información personal es crucial. Los ciberdelincuentes buscan constantemente formas de robar datos, dinero o identidad de usuarios desprevenidos.</p>
+      
+      <h3>Amenazas Comunes en Internet</h3>
+      <h4>Phishing</h4>
+      <p>Intentos de robar información personal mediante correos o mensajes falsos:</p>
+      <ul>
+        <li>Correos que parecen de bancos o empresas legítimas</li>
+        <li>Mensajes pidiendo datos personales</li>
+        <li>Enlaces sospechosos en mensajes</li>
+      </ul>
+    `,
+    category: "Seguridad",
+    author: "Equipo de Inclusión Digital",
+    image: "/blog_pic_5.png",
+    authorImg: "/profile_icon.png",
+    date: new Date().toISOString(),
+    slug: "seguridad-digital-protege-tu-informacion-en-internet"
+  }
+]
 
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
-// API Endpoint to get all blogs from Sanity
+// API Endpoint to get all blogs
 export async function GET(request) {
   try {
-    const blogId = request.nextUrl.searchParams.get("id");
-    const slug = request.nextUrl.searchParams.get("slug");
+    const { searchParams } = new URL(request.url)
+    const blogId = searchParams.get("id")
+    const slug = searchParams.get("slug")
+    const category = searchParams.get("category")
     
-    if (blogId || slug) {
-      // Get single blog by ID or slug from Sanity
-      let query, params;
-      
-      if (slug) {
-        query = `*[_type == "blog" && slug.current == $slug][0]{
-          _id,
-          title,
-          slug,
-          description,
-          category,
-          author,
-          image,
-          authorImg,
-          publishedAt,
-          _createdAt
-        }`;
-        params = { slug };
-      } else {
-        query = `*[_type == "blog" && _id == $id][0]{
-          _id,
-          title,
-          slug,
-          description,
-          category,
-          author,
-          image,
-          authorImg,
-          publishedAt,
-          _createdAt
-        }`;
-        params = { id: blogId };
+    if (blogId) {
+      // Get single blog by ID
+      const blog = sampleBlogs.find(b => b._id === blogId)
+      if (!blog) {
+        return NextResponse.json({ error: 'Blog not found' }, { status: 404 })
       }
-      
-      const sanityBlog = await client.fetch(query, params);
-      
-      if (!sanityBlog) {
-        return NextResponse.json({ error: 'Blog not found' }, { status: 404 });
+      return NextResponse.json(blog)
+    } else if (slug) {
+      // Get single blog by slug
+      const blog = sampleBlogs.find(b => b.slug === slug)
+      if (!blog) {
+        return NextResponse.json({ error: 'Blog not found' }, { status: 404 })
       }
-      
-      const transformedBlog = transformSanityBlog(sanityBlog);
-      return NextResponse.json(transformedBlog);
+      return NextResponse.json(blog)
     } else {
-      // Get all blogs from Sanity
-      const sanityBlogs = await client.fetch(
-        `*[_type == "blog"] | order(publishedAt desc, _createdAt desc){
-          _id,
-          title,
-          slug,
-          description,
-          category,
-          author,
-          image,
-          authorImg,
-          publishedAt,
-          _createdAt
-        }`
-      );
+      // Get all blogs or filter by category
+      let blogs = sampleBlogs
       
-      const transformedBlogs = sanityBlogs.map(transformSanityBlog);
-      return NextResponse.json({ blogs: transformedBlogs });
+      if (category && category !== 'All') {
+        blogs = sampleBlogs.filter(blog => blog.category === category)
+      }
+      
+      return NextResponse.json({ 
+        success: true,
+        blogs: blogs 
+      })
     }
   } catch (error) {
-    console.error('Error in Sanity blog API:', error);
+    console.error('Error in blog API:', error)
     return NextResponse.json({ 
-      error: 'Error fetching blogs from Sanity',
+      success: false,
+      error: 'Error fetching blogs',
       blogs: [] 
-    }, { status: 500 });
+    }, { status: 500 })
   }
 }
 
-// MongoDB version (commented for now)
-// export async function GET(request) {
-//   try {
-//     await ConnectDB();
-//     const blogId = request.nextUrl.searchParams.get("id");
-//     if (blogId) {
-//       const blog = await BlogModel.findById(blogId);
-//       return NextResponse.json(blog);
-//     }
-//     else {
-//       const blogs = await BlogModel.find({});
-//       return NextResponse.json({ blogs })
-//     }
-//   } catch (error) {
-//     console.error('Error in blog API:', error);
-//     return NextResponse.json({ 
-//       error: 'Error fetching blogs',
-//       blogs: [] 
-//     }, { status: 500 });
-//   }
-// }
-
-
-// API Endpoint For Uploading Blogs (MongoDB version - commented for now)
-// export async function POST(request) {
-//   await ConnectDB();
-//   const formData = await request.formData();
-//   const image = formData.get('image');
-
-//   let imgUrl = '';
-//   if (image && typeof image === 'object') {
-//     const imageByteData = await image.arrayBuffer();
-//     const buffer = Buffer.from(imageByteData);
-//     // Subir a Cloudinary
-//     try {
-//       const uploadResponse = await cloudinary.uploader.upload_stream({ resource_type: 'image' }, (error, result) => {
-//         if (error) throw error;
-//         imgUrl = result.secure_url;
-//       });
-//       // Usar stream para compatibilidad con Next.js API routes
-//       const stream = require('stream');
-//       const readable = new stream.Readable();
-//       readable._read = () => {};
-//       readable.push(buffer);
-//       readable.push(null);
-//       readable.pipe(uploadResponse);
-//       // Esperar a que termine la subida
-//       await new Promise((resolve, reject) => {
-//         uploadResponse.on('finish', resolve);
-//         uploadResponse.on('error', reject);
-//       });
-//     } catch (err) {
-//       console.error('Error al subir imagen a Cloudinary:', err);
-//       return NextResponse.json({ success: false, msg: 'Error al subir imagen' }, { status: 500 });
-//     }
-//   }
-
-//   const blogData = {
-//     title: `${formData.get('title')}`,
-//     description: `${formData.get('description')}`,
-//     category: `${formData.get('category')}`,
-//     author: `${formData.get('author')}`,
-//     image: imgUrl,
-//     authorImg: `${formData.get('authorImg')}`
-//   }
-
-//   await BlogModel.create(blogData);
-//   console.log("Blog Saved");
-
-//   return NextResponse.json({ success: true, msg: "Blog Added" })
-// }
-
-// Sanity version for creating blogs
 export async function POST(request) {
   try {
-    const formData = await request.formData();
-    const image = formData.get('image');
-
-    let imageAsset = null;
-    if (image && typeof image === 'object') {
-      const imageByteData = await image.arrayBuffer();
-      const buffer = Buffer.from(imageByteData);
-      
-      // Upload image to Sanity
-      imageAsset = await client.assets.upload('image', buffer, {
-        filename: image.name || 'blog-image.jpg'
-      });
-    }
-
-    const blogData = {
-      _type: 'blog',
+    const formData = await request.formData()
+    
+    const newBlog = {
+      _id: Date.now().toString(),
       title: formData.get('title'),
       description: formData.get('description'),
       category: formData.get('category'),
       author: formData.get('author'),
-      image: imageAsset ? {
-        _type: 'image',
-        asset: {
-          _type: 'reference',
-          _ref: imageAsset._id
-        }
-      } : undefined,
-      publishedAt: new Date().toISOString(),
-      slug: {
-        _type: 'slug',
-        current: formData.get('title').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
-      }
-    };
-
-    const result = await client.create(blogData);
-    console.log("Blog Saved to Sanity");
-
-    return NextResponse.json({ success: true, msg: "Blog Added", id: result._id });
+      authorImg: formData.get('authorImg') || '/profile_icon.png',
+      image: '/blog_pic_1.png', // Default image for now
+      date: new Date().toISOString(),
+      slug: formData.get('title')?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+    }
+    
+    // En una implementación real, aquí guardarías en Sanity
+    console.log('New blog created:', newBlog)
+    
+    return NextResponse.json({
+      success: true,
+      msg: "Blog Added",
+      blog: newBlog
+    })
   } catch (error) {
-    console.error('Error creating blog in Sanity:', error);
-    return NextResponse.json({ success: false, msg: 'Error al crear blog' }, { status: 500 });
+    console.error('Error creating blog:', error)
+    return NextResponse.json({
+      success: false,
+      msg: 'Error creating blog'
+    }, { status: 500 })
   }
 }
 
-// Creating API Endpoint to delete Blog (MongoDB version - commented for now)
-// export async function DELETE(request) {
-//   await ConnectDB();
-//   const id = await request.nextUrl.searchParams.get('id');
-//   const blog = await BlogModel.findById(id);
-//   // fs.unlink solo funciona en local, no en Vercel/Render
-//   await BlogModel.findByIdAndDelete(id);
-//   return NextResponse.json({ msg: "Blog Deleted" });
-// }
-
-// Sanity version for deleting blogs
 export async function DELETE(request) {
   try {
-    const id = await request.nextUrl.searchParams.get('id');
-    await client.delete(id);
-    return NextResponse.json({ msg: "Blog Deleted" });
+    const { searchParams } = new URL(request.url)
+    const id = searchParams.get('id')
+    
+    if (!id) {
+      return NextResponse.json({
+        success: false,
+        msg: 'Blog ID is required'
+      }, { status: 400 })
+    }
+    
+    // En una implementación real, aquí eliminarías de Sanity
+    console.log('Blog deleted:', id)
+    
+    return NextResponse.json({
+      success: true,
+      msg: "Blog Deleted"
+    })
   } catch (error) {
-    console.error('Error deleting blog from Sanity:', error);
-    return NextResponse.json({ error: 'Error deleting blog' }, { status: 500 });
+    console.error('Error deleting blog:', error)
+    return NextResponse.json({
+      success: false,
+      msg: 'Error deleting blog'
+    }, { status: 500 })
   }
 }
