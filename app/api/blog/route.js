@@ -94,61 +94,120 @@ export async function GET(request) {
 // }
 
 
-// API Endpoint For Uploading Blogs
+// API Endpoint For Uploading Blogs (MongoDB version - commented for now)
+// export async function POST(request) {
+//   await ConnectDB();
+//   const formData = await request.formData();
+//   const image = formData.get('image');
+
+//   let imgUrl = '';
+//   if (image && typeof image === 'object') {
+//     const imageByteData = await image.arrayBuffer();
+//     const buffer = Buffer.from(imageByteData);
+//     // Subir a Cloudinary
+//     try {
+//       const uploadResponse = await cloudinary.uploader.upload_stream({ resource_type: 'image' }, (error, result) => {
+//         if (error) throw error;
+//         imgUrl = result.secure_url;
+//       });
+//       // Usar stream para compatibilidad con Next.js API routes
+//       const stream = require('stream');
+//       const readable = new stream.Readable();
+//       readable._read = () => {};
+//       readable.push(buffer);
+//       readable.push(null);
+//       readable.pipe(uploadResponse);
+//       // Esperar a que termine la subida
+//       await new Promise((resolve, reject) => {
+//         uploadResponse.on('finish', resolve);
+//         uploadResponse.on('error', reject);
+//       });
+//     } catch (err) {
+//       console.error('Error al subir imagen a Cloudinary:', err);
+//       return NextResponse.json({ success: false, msg: 'Error al subir imagen' }, { status: 500 });
+//     }
+//   }
+
+//   const blogData = {
+//     title: `${formData.get('title')}`,
+//     description: `${formData.get('description')}`,
+//     category: `${formData.get('category')}`,
+//     author: `${formData.get('author')}`,
+//     image: imgUrl,
+//     authorImg: `${formData.get('authorImg')}`
+//   }
+
+//   await BlogModel.create(blogData);
+//   console.log("Blog Saved");
+
+//   return NextResponse.json({ success: true, msg: "Blog Added" })
+// }
+
+// Sanity version for creating blogs
 export async function POST(request) {
-  await ConnectDB();
-  const formData = await request.formData();
-  const image = formData.get('image');
+  try {
+    const formData = await request.formData();
+    const image = formData.get('image');
 
-  let imgUrl = '';
-  if (image && typeof image === 'object') {
-    const imageByteData = await image.arrayBuffer();
-    const buffer = Buffer.from(imageByteData);
-    // Subir a Cloudinary
-    try {
-      const uploadResponse = await cloudinary.uploader.upload_stream({ resource_type: 'image' }, (error, result) => {
-        if (error) throw error;
-        imgUrl = result.secure_url;
+    let imageAsset = null;
+    if (image && typeof image === 'object') {
+      const imageByteData = await image.arrayBuffer();
+      const buffer = Buffer.from(imageByteData);
+      
+      // Upload image to Sanity
+      imageAsset = await client.assets.upload('image', buffer, {
+        filename: image.name || 'blog-image.jpg'
       });
-      // Usar stream para compatibilidad con Next.js API routes
-      const stream = require('stream');
-      const readable = new stream.Readable();
-      readable._read = () => {};
-      readable.push(buffer);
-      readable.push(null);
-      readable.pipe(uploadResponse);
-      // Esperar a que termine la subida
-      await new Promise((resolve, reject) => {
-        uploadResponse.on('finish', resolve);
-        uploadResponse.on('error', reject);
-      });
-    } catch (err) {
-      console.error('Error al subir imagen a Cloudinary:', err);
-      return NextResponse.json({ success: false, msg: 'Error al subir imagen' }, { status: 500 });
     }
+
+    const blogData = {
+      _type: 'blog',
+      title: formData.get('title'),
+      description: formData.get('description'),
+      category: formData.get('category'),
+      author: formData.get('author'),
+      image: imageAsset ? {
+        _type: 'image',
+        asset: {
+          _type: 'reference',
+          _ref: imageAsset._id
+        }
+      } : undefined,
+      publishedAt: new Date().toISOString(),
+      slug: {
+        _type: 'slug',
+        current: formData.get('title').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+      }
+    };
+
+    const result = await client.create(blogData);
+    console.log("Blog Saved to Sanity");
+
+    return NextResponse.json({ success: true, msg: "Blog Added", id: result._id });
+  } catch (error) {
+    console.error('Error creating blog in Sanity:', error);
+    return NextResponse.json({ success: false, msg: 'Error al crear blog' }, { status: 500 });
   }
-
-  const blogData = {
-    title: `${formData.get('title')}`,
-    description: `${formData.get('description')}`,
-    category: `${formData.get('category')}`,
-    author: `${formData.get('author')}`,
-    image: imgUrl,
-    authorImg: `${formData.get('authorImg')}`
-  }
-
-  await BlogModel.create(blogData);
-  console.log("Blog Saved");
-
-  return NextResponse.json({ success: true, msg: "Blog Added" })
 }
 
-// Creating API Endpoint to delete Blog
+// Creating API Endpoint to delete Blog (MongoDB version - commented for now)
+// export async function DELETE(request) {
+//   await ConnectDB();
+//   const id = await request.nextUrl.searchParams.get('id');
+//   const blog = await BlogModel.findById(id);
+//   // fs.unlink solo funciona en local, no en Vercel/Render
+//   await BlogModel.findByIdAndDelete(id);
+//   return NextResponse.json({ msg: "Blog Deleted" });
+// }
+
+// Sanity version for deleting blogs
 export async function DELETE(request) {
-  await ConnectDB();
-  const id = await request.nextUrl.searchParams.get('id');
-  const blog = await BlogModel.findById(id);
-  // fs.unlink solo funciona en local, no en Vercel/Render
-  await BlogModel.findByIdAndDelete(id);
-  return NextResponse.json({ msg: "Blog Deleted" });
+  try {
+    const id = await request.nextUrl.searchParams.get('id');
+    await client.delete(id);
+    return NextResponse.json({ msg: "Blog Deleted" });
+  } catch (error) {
+    console.error('Error deleting blog from Sanity:', error);
+    return NextResponse.json({ error: 'Error deleting blog' }, { status: 500 });
+  }
 }
